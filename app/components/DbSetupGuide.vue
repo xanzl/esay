@@ -67,11 +67,11 @@ const detail = computed<Array<{ step: string; code?: string }>>(() => {
     </div>
 
     <ol class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-      <li v-for="(item, index) in detail" :key="index" class="flex gap-2">
+      <li v-for="(item, index) in detail" :key="index" class="flex flex-col gap-1.5">
         <span v-if="item.step" class="min-w-0">{{ index + 1 }}. {{ item.step }}</span>
         <pre
           v-if="item.code"
-          class="w-full overflow-x-auto rounded-lg bg-gray-100 p-2 text-xs leading-relaxed dark:bg-gray-800"
+          class="w-full overflow-x-auto whitespace-pre-wrap rounded-lg bg-gray-100 p-2 text-xs leading-relaxed dark:bg-gray-800"
         >{{ item.code }}</pre>
       </li>
     </ol>

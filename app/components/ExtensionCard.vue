@@ -31,6 +31,13 @@ const headerMeta = computed(() => {
   return ''
 })
 
+/** 头部最右侧的跳转链接（音乐→原歌曲页，视频→原视频页） */
+const originalHref = computed(() => {
+  if (props.extension.type === 'MUSIC') return musicJumpHref.value
+  if (props.extension.type === 'VIDEO') return video.value.url
+  return ''
+})
+
 const githubAvatarFailed = ref(false)
 
 function displayDomain(url: string): string {
@@ -120,12 +127,6 @@ const tweet = computed(() => {
   }
 })
 
-/** 音乐/视频卡片的原始页面链接（顶栏右侧 link 图标） */
-const originalHref = computed(() => {
-  if (props.extension.type === 'MUSIC') return music.value.jumpUrl || musicJumpHref.value
-  if (props.extension.type === 'VIDEO') return video.value.url || ''
-  return ''
-})
 </script>
 
 <template>

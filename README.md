@@ -14,9 +14,11 @@
 
 ## 一键部署
 
+** 一键部署暂不推荐 **
+
 > 推荐流程：先 **Fork** 本仓库 → 用 Fork 后的仓库部署（部署入口详见下方各平台）→ 以后更新只需在 GitHub 上点 **Sync fork** 同步上游，平台自动重新部署。
 
-**Cloudflare Workers（主推）** — D1 数据库与 R2 存储桶与 worker 集成度最佳，后台绑定后首次打开站点按引导初始化管理员：
+**Cloudflare Workers（）** — D1 数据库与 R2 存储桶与 worker 集成度最佳，后台绑定后首次打开站点按引导初始化管理员：
 
 [![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/xanzl/esay)
 
@@ -28,7 +30,7 @@
 
 [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/xanzl/esay)
 
-> 一键部署按钮指向本仓库；若要长期自动更新，建议 **Fork 后把按钮链接中的 `xanzl/esay` 换成你自己的 fork 地址**（如 `https://github.com/你的用户名/esay`）再部署，或使用下方「Git 集成」方式关联 fork。
+> 一键部署按钮指向本仓库；若要长期自动更新，建议 **Fork 后 **再部署，或使用下方「Git 集成」方式关联 fork。
 
 ## 快速开始（Cloudflare Workers，推荐）
 
@@ -43,7 +45,7 @@
 2. 构建命令与输出目录会自动读取 `wrangler.toml` 的 `[build]` 配置，无需手动填写
 3. 创建完成后，push 到 fork 的任何改动都会自动重新构建部署
 
-> 也可以直接用右上角一键部署按钮（一次性部署，无自动更新）。
+> 也可以直接用右上角一键部署按钮（一次性部署，无自动更新，不推荐）。
 
 ### 第三步：后台配置数据库与存储绑定
 
@@ -56,8 +58,6 @@
    - R2 bucket → 选择 `esay-images`，绑定名称 `R2`
 
 4. 打开站点，在「初始化 esay」页面设置管理员用户名与密码即可使用。
-
-> 不使用 Git 集成时，也可本地部署：`wrangler login && pnpm build && pnpm deploy`。
 
 ## 如何更新
 
@@ -75,16 +75,9 @@
 
 > 如果你部署的不是 fork（比如一键部署的原仓库），则用方式二或方式三。
 
-### 方式二：一键部署重跑
+### 方式二：一键部署重跑（不推荐）
 
 新版本发布后，重新点一次 README 顶部的一键部署按钮（部署到同一 Worker 名称即可覆盖更新）。注意：后台配置的变量与绑定**需要重新确认**（绑定在后台配置，通常不受影响；变量如被清空需重新添加）。
-
-### 方式三：手动 wrangler 部署
-
-```bash
-git pull
-pnpm install && pnpm build && pnpm deploy
-```
 
 ### 升级前备份（建议）
 
@@ -120,6 +113,8 @@ python3 -c "import secrets; print(secrets.token_hex(32))"
 
 ## Vercel / Netlify 部署
 
+这里可以注册[Neon](https://neon.com/)使用它家提供的 PostgreSQL 数据库，免费版已够用
+
 仓库配置已包含根目录 `vercel.json` 与 `netlify.toml`（构建时通过 `NITRO_PRESET` 自动切换到对应 Nitro preset），平台侧按常规 Git 部署即可：
 
 - **Vercel**：Git 导入时识别 `vercel.json`（`NITRO_PRESET=vercel` 构建），输出 Build Output API 目录 `.vercel/output`；`server/api` 与 `server/routes`（`/healthz`、`/hub.json`）全部自动转换为函数
@@ -138,8 +133,6 @@ python3 -c "import secrets; print(secrets.token_hex(32))"
 | `PUBLIC_API_ENABLED` / `APP_URL` | 公开 API 开关 / 站点域名（`APP_URL` 用于图片与 Hub 输出的绝对地址） |
 
 > 本地验证对应平台构建：`NITRO_PRESET=vercel pnpm build` / `NITRO_PRESET=netlify pnpm build`（产物在 `.vercel/output` / `dist` + `.netlify/`）。注意：Vercel 与 Netlify 需要 PostgreSQL + S3，不持有 Cloudflare D1/R2 绑定。
-
-这里可以注册[Neon](https://neon.com/)使用它家提供的 PostgreSQL 数据库，免费版已够用
 
 ## 环境变量
 

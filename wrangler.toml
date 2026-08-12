@@ -5,7 +5,7 @@
 #   - R2 bucket：moment-images，绑定名称 R2
 # 表结构在应用首次请求时自动创建，管理员账号通过站点初始化页面设置。
 # 用法：pnpm build && pnpm deploy
-name = "moment"
+name = "esay"
 main = ".output/server/index.mjs"
 compatibility_date = "2026-08-08"
 compatibility_flags = ["nodejs_compat"]

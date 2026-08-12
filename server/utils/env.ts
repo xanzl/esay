@@ -36,12 +36,22 @@ export function getEnv(event: H3Event): Env {
 
 /**
  * 解析数据库类型：显式配置优先；未配置时按部署平台自动识别——
- * Vercel / Netlify 运行时注入 VERCEL=1 / NETLIFY=true，自动默认 PostgreSQL（它们没有 D1 绑定）；
- * 其余（Cloudflare Workers / 本地）默认 D1。
+ * 优先读取构建期注入的 RUNTIME_CONFIG.platform（Nitro 内置机制，Vercel/Netlify 构建命令带
+ * NITRO_PRESET，运行时以 JSON 字面量内联进产物，可靠）；其次兜底平台系统变量
+ * （VERCEL=1 / NETLIFY=true，仅部分平台运行时可用）；其余（Cloudflare Workers / 本地）默认 D1。
  */
 export function resolveDbType(env: Env): 'd1' | 'postgresql' {
   const explicit = String(env.DB_TYPE ?? '').trim().toLowerCase()
   if (explicit === 'postgresql' || explicit === 'd1') return explicit
+  try {
+    const raw = process.env.RUNTIME_CONFIG as string | undefined
+    if (raw) {
+      const platform = String((JSON.parse(raw) as { platform?: string }).platform ?? '')
+      if (platform.includes('netlify') || platform.includes('vercel')) return 'postgresql'
+    }
+  } catch {
+    /* 非 Nitro 运行环境（单元测试等）跳过 */
+  }
   if (env.VERCEL === '1' || env.NETLIFY === 'true') return 'postgresql'
   return 'd1'
 }

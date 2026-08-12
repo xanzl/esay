@@ -13,6 +13,12 @@ export default defineNuxtConfig({
 
   modules: ['@pinia/nuxt'],
 
+  // 构建期写入部署平台（Nitro 内置机制把 process.env.RUNTIME_CONFIG 替换为 JSON 字面量，
+  // 运行时可靠读取，不依赖平台系统变量——Netlify 的 NETLIFY=true 仅构建期可用）
+  runtimeConfig: {
+    platform: process.env.NITRO_PRESET || 'cloudflare_module',
+  },
+
   nitro: {
     preset: process.env.NITRO_PRESET ?? 'cloudflare_module',
     compatibilityDate: '2025-07-15',

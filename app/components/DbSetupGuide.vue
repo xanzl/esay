@@ -14,12 +14,15 @@ const detail = computed<Array<{ step: string; code?: string }>>(() => {
   if (reason === 'missing_d1_binding') {
     return [
       {
-        step: '在项目根目录 wrangler.toml 的 d1_databases 中添加（或确认已有）D1 绑定：',
-        code: 'd1_databases = [{ binding = "DB", database_name = "moment-db" }]',
+        step: '在 Cloudflare 后台创建 D1 数据库：登录 dash.cloudflare.com → Workers & Pages → D1 → Create database，名称填 moment-db。',
       },
-      { step: '确认已执行 wrangler login 登录 Cloudflare 账号。' },
-      { step: '重新构建并部署：' },
-      { step: '', code: 'pnpm build && pnpm deploy' },
+      {
+        step: '在 Worker 上绑定该数据库：Workers & Pages → 你的 Worker → Settings → Bindings → Add binding → D1 database，选择刚创建的 moment-db，绑定名称填 DB。',
+      },
+      {
+        step: '确认后重新部署并生效：',
+        code: 'pnpm build && pnpm deploy',
+      },
       {
         step: '如果部署在 Vercel / Netlify（而非 Cloudflare Workers），请改用 PostgreSQL：设置 DB_TYPE=postgresql 与 DATABASE_URL 后重新部署。',
       },

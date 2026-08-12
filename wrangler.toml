@@ -10,6 +10,11 @@ main = ".output/server/index.mjs"
 compatibility_date = "2026-08-08"
 compatibility_flags = ["nodejs_compat"]
 
+# 构建配置：供 Cloudflare 后台（一键部署 / Git 集成）自动预填构建命令与产物目录
+[build]
+command = "pnpm install && pnpm build"
+output = ".output/public"
+
 observability = { enabled = true, head_sampling_rate = 1 }
 
 # 非敏感变量。敏感值（JWT_SECRET / GITHUB_TOKEN）用 wrangler secret put 设置，

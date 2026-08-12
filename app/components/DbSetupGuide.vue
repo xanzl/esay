@@ -14,10 +14,10 @@ const detail = computed<Array<{ step: string; code?: string }>>(() => {
   if (reason === 'missing_d1_binding') {
     return [
       {
-        step: '在 Cloudflare 后台创建 D1 数据库：登录 dash.cloudflare.com → Workers & Pages → D1 → Create database，名称填 moment-db。',
+        step: '在 Cloudflare 后台创建 D1 数据库：登录 dash.cloudflare.com → Workers & Pages → D1 → Create database，名称填 esay-db（可自定义）。',
       },
       {
-        step: '在 Worker 上绑定该数据库：Workers & Pages → 你的 Worker → Settings → Bindings → Add binding → D1 database，选择刚创建的 moment-db，绑定名称填 DB。',
+        step: '在 Worker 上绑定该数据库：Workers & Pages → 你的 Worker → Settings → Bindings → Add binding → D1 database，选择刚创建的 esay-db，绑定名称填 DB。',
       },
       {
         step: '确认后重新部署并生效：',

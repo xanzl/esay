@@ -1,8 +1,8 @@
 # esay · Cloudflare Workers 部署配置
 # 数据库（D1）与存储（R2）绑定由用户在 Cloudflare 后台手动配置，不在此声明：
 #   Workers & Pages → 你的 Worker → Settings → Bindings
-#   - D1 database：moment-db，绑定名称 DB
-#   - R2 bucket：moment-images，绑定名称 R2
+#   - D1 database：esay-db（名称可自定义），绑定名称 DB
+#   - R2 bucket：esay-images（名称可自定义），绑定名称 R2
 # 表结构在应用首次请求时自动创建，管理员账号通过站点初始化页面设置。
 # 用法：pnpm build && pnpm deploy
 name = "esay"

@@ -1,6 +1,6 @@
 # esay · 单用户极简说说系统
 
-> **esay** = echo say——想说什么就说什么，轻松一点。
+> **esay** = echo say——轻说。
 > 开源协议：**MIT**（见 [LICENSE](LICENSE)）｜Hub 协议兼容 [ech0](https://github.com/lin-snow/ech0)（AGPL-3.0）
 
 为个人设计的极简说说系统：记录日常动态、想法或短内容，支持 Markdown 与图片，并可通过公开 API 外嵌到个人博客等任意站点。
@@ -56,12 +56,10 @@ pnpm deploy
 
 - `JWT_SECRET`（推荐配置）：JWT 签名密钥。**不配置也能用**——首次请求自动生成并持久化到数据库（跨部署/重启不失效）；但多实例部署（Vercel/Netlify 的函数实例）存在并发生成、登录态偶发失效的窗口，建议显式配置固定值。三种配置方式任选：
   - Cloudflare dashboard：Workers → 你的 Worker → 设置 → 变量与机密 → 添加（普通变量或机密均可，名称 `JWT_SECRET`）
-  - `wrangler secret put JWT_SECRET`（dashboard 等效的 CLI 方式）
   - Vercel / Netlify：平台的环境变量设置里添加 `JWT_SECRET`
   - 生成方式见下方「生成 JWT 密钥」
-- `wrangler secret put GITHUB_TOKEN`（可选）：GitHub 项目卡片解析携带该 Token，API 配额从 60 次/小时提升至 5000 次/小时；解析结果缓存 24 小时（D1/PG `extension_cache` 表），同一仓库不重复请求
-- 绑定名称固定为 `DB`（D1）与 `R2`（存储桶），配置错了初始化页会提示；数据持久保留在 `moment-db` / `moment-images` 中，可在仪表盘或 `wrangler d1 list` / `wrangler r2 bucket list` 中查看
-- 若出现"重新部署后站点又回到初始化页"：先运行 `wrangler d1 list` 确认是否存在多个 `moment-db`（多为历史手动创建），并检查根目录 `wrangler.toml` 是否被 wrangler 写入了 `database_id`（有则数据已绑定到该库）
+- 在环境变量配置 `GITHUB_TOKEN`（可选）：GitHub 项目卡片解析携带该 Token，API 配额从 60 次/小时提升至 5000 次/小时；解析结果缓存 24 小时（D1/PG `extension_cache` 表），同一仓库不重复请求
+- 绑定名称固定为 `DB`（D1）与 `R2`（存储桶），配置错了初始化页会提示；数据持久保留在 `esay-db` / `esay-images` 中（名称可自定义），可在仪表盘查看
 - 所有 `/api/*` 响应均带 `Cache-Control: no-store`，不会被浏览器或边缘缓存（若站点启用了 Cache Everything 类规则，也请排除 `/api/*`）
 
 ### 生成 JWT 密钥
@@ -99,6 +97,8 @@ python3 -c "import secrets; print(secrets.token_hex(32))"
 | `PUBLIC_API_ENABLED` / `APP_URL` | 公开 API 开关 / 站点域名（`APP_URL` 用于图片与 Hub 输出的绝对地址） |
 
 > 本地验证对应平台构建：`NITRO_PRESET=vercel pnpm build` / `NITRO_PRESET=netlify pnpm build`（产物在 `.vercel/output` / `dist` + `.netlify/`）。注意：Vercel 与 Netlify 需要 PostgreSQL + S3，不持有 Cloudflare D1/R2 绑定。
+
+这里可以注册[Neon](https://neon.com/)使用它家提供的 PostgreSQL 数据库，免费版已够用
 
 ## 环境变量
 

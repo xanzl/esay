@@ -1,0 +1,56 @@
+{
+  "name": "esay",
+  "version": "2.5.0",
+  "private": true,
+  "type": "module",
+  "description": "esay · 单用户极简说说系统",
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "typecheck": "nuxt typecheck",
+    "check:repo-parity": "node scripts/check-repo-parity.mjs",
+    "test": "vitest run",
+    "test:pg": "vitest run tests/pg-flow.test.ts",
+    "db:generate:pg": "drizzle-kit generate --config=drizzle.config.pg.ts",
+    "db:migrate:pg": "drizzle-kit migrate --config=drizzle.config.pg.ts",
+    "db:push:pg": "drizzle-kit push --config=drizzle.config.pg.ts",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "@pinia/nuxt": "^1.0.1",
+    "aws4fetch": "^1.0.20",
+    "bcryptjs": "^3.0.3",
+    "dompurify": "^3.4.13",
+    "drizzle-orm": "^0.45.2",
+    "highlight.js": "^11.11.1",
+    "jose": "^6.2.8",
+    "marked": "^18.0.9",
+    "nuxt": "^3.21.11",
+    "opencode-tokenwatch": "^0.5.0",
+    "pinia": "^4.0.2",
+    "playwright-core": "^1.62.1",
+    "postgres": "^3.4.9",
+    "uuid": "^11.1.1"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260808.1",
+    "@iconify/json": "^2.2.512",
+    "@iconify/tailwind4": "^1.2.3",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^26.2.0",
+    "drizzle-kit": "^0.31.10",
+    "h3": "^1.15.4",
+    "tailwindcss": "^4.3.3",
+    "typescript": "~5.9.0",
+    "vitest": "^4.1.10",
+    "vue-tsc": "^3.3.9",
+    "wrangler": "^4.120.0"
+  },
+  "allowScripts": {
+    "esbuild@0.18.20": true,
+    "esbuild@0.25.12": true,
+    "esbuild@0.28.1": true
+  }
+}

@@ -1,0 +1,3 @@
+[build]
+  command = "NITRO_PRESET=netlify pnpm build"
+  publish = "dist"

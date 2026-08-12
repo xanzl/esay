@@ -1,6 +1,6 @@
 {
   "name": "esay",
-  "version": "2.5.0",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "description": "esay · 单用户极简说说系统",

@@ -16,11 +16,17 @@
 
 > 先把代码推送到 GitHub，再把下面链接中的 `<REPO_URL>` 替换成你的仓库地址（如 `https://github.com/yourname/esay`）即可。
 
-| 平台 | 按钮 | 说明 |
-| --- | --- | --- |
-| Cloudflare Workers（主推） | [![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=<REPO_URL>) | 自动创建 D1 数据库与 R2 存储桶，首次打开站点按引导初始化管理员 |
-| Vercel | [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=<REPO_URL>) | 需配置 PostgreSQL（`DB_TYPE=postgresql`）+ S3（`STORAGE_TYPE=s3`），见下方环境变量表 |
-| Netlify | [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=<REPO_URL>) | 同上，需 PostgreSQL + S3 |
+**Cloudflare Workers（主推）** — 自动创建 D1 数据库与 R2 存储桶，首次打开站点按引导初始化管理员：
+
+[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=<REPO_URL>)
+
+**Vercel** — 需配置 PostgreSQL（`DB_TYPE=postgresql`）+ S3（`STORAGE_TYPE=s3`），见下方环境变量表：
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=<REPO_URL>)
+
+**Netlify** — 同上，需 PostgreSQL + S3：
+
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=<REPO_URL>)
 
 > Cloudflare 一键部署要求仓库根目录保留 `wrangler.toml` 且能正常执行 `pnpm build`（Nitro cloudflare_module preset）；Vercel / Netlify 会读取 `vercel.json` / `netlify.toml` 自动切换对应 preset。
 
@@ -128,48 +134,6 @@ pnpm db:generate:pg     # 生成 PG 迁移（drizzle-kit，可选）
 pnpm db:migrate:pg      # 应用 PG 迁移（可选）
 pnpm deploy             # wrangler deploy（读取根目录 wrangler.toml）
 ```
-
-## 图标
-
-本项目使用 @iconify/tailwind4（Tailwind CSS 4）动态图标，类名格式为 `icon-[图标库--图标名]`，例如：
-
-```html
-<span class="icon-[ph--gear-six]"></span>
-<span class="icon-[iconamoon--search] text-rose-500 text-2xl"></span>
-```
-
-> 注意：规划文档中的类名（如 `i-ph-gear-six`）是 Tailwind 3 版 `@iconify/tailwind` 插件的格式；文档同时要求安装的 `@iconify/tailwind4` 使用 `icon-[前缀--图标名]` 语法，本项目按此实现。图标颜色/大小由文字颜色与字号控制。查找图标可访问 [Yesicon](https://yesicon.app/)。
-
-常用图标映射（前缀：ph=Phosphor，iconamoon=Iconamoon，memory=Memory，material-symbols=Material Symbols）：
-
-| 用途 | 类名 |
-| --- | --- |
-| 搜索 | `icon-[iconamoon--search]` |
-| 登录 / 退出 | `icon-[memory--login]` / `icon-[memory--logout]` |
-| 亮色 / 暗色模式 | `icon-[material-symbols--light-mode-outline-rounded]` / `icon-[material-symbols--dark-mode-outline-rounded]` |
-| 设置 | `icon-[ph--gear-six]` |
-| 发布 / 编辑 / 删除 | `icon-[ph--paper-plane-right]` / `icon-[ph--pencil-simple]` / `icon-[ph--trash]` |
-| 图片 / 日历 | `icon-[ph--image]` / `icon-[ph--calendar-blank]` |
-| 加载中 / 关闭 | `icon-[ph--spinner]`（配合 `animate-spin`）/ `icon-[ph--x]` |
-| 空状态 | `icon-[ph--package]` |
-
-> 规划文档中的空状态图标 `i-ph-box` 在 Phosphor 图标集中不存在，已改用 `icon-[ph--package]`。
-
-## 与规划文档的差异说明
-
-- `users` 表新增 `nickname` 列（文档要求展示与修改"站长昵称"，但原数据模型未包含）
-- 认证改为 jose + bcryptjs（Workers 原生兼容，无需依赖原生模块）
-- 图片经 `/api/files/**` 代理访问，无需为 R2 桶单独配置公开域名
-- 登录接口增加进程内限流（5 分钟 10 次）
-- 管理员账号改为站点"初始化页面"引导创建（首次访问时 `/api/setup/status` 检测用户表为空即展示），替代原 `ADMIN_*` 环境变量方案，支持限流且仅允许初始化一次
-- 数据库表结构改为首次请求时幂等自举创建（`CREATE TABLE IF NOT EXISTS`），D1 免迁移
-- D1/R2 绑定改为 wrangler 自动预置（4.45+），`wrangler deploy` 一步到位；资源固定命名为 `moment-db` / `moment-images`，重复部署按名复用不重建
-- JWT 密钥内置在 `[vars]` 随部署下发（所有实例一致），也可用 secret 覆盖；未配置的平台仍自动生成并持久化到 `app_settings`
-- `GET /api/auth/me` 纳入认证中间件保护（未登录返回 401，登录态真实可查）
-- 所有 `/api/*` 响应 `Cache-Control: no-store`，避免浏览器/边缘缓存造成"初始化后仍显示初始化页"类问题
-- Markdown 渲染使用 marked + DOMPurify 消毒（防 XSS）
-- 图标类名改用 Tailwind 4 版 `icon-[前缀--图标名]` 语法（详见上方图标章节）
-- 空状态图标 `i-ph-box` 不存在，改用 `icon-[ph--package]`
 
 ## 项目结构
 

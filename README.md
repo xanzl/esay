@@ -52,6 +52,38 @@ pnpm deploy
 
 > 按项目验收要求，不使用 `wrangler dev` 本地调试，所有验证均在真实 Workers 环境（`wrangler deploy`）中进行。
 
+## 如何更新
+
+新版本通过 GitHub Releases 发布（仓库右上角 Watch → Custom → **Releases** 可收发布通知）。
+
+**数据自动迁移，无需任何手动操作**：表结构在首次请求时自动创建/补列（`CREATE TABLE IF NOT EXISTS` + 幂等 ALTER），升级到新版本后第一次请求即完成迁移，不用跑 migration、不用执行 SQL。
+
+三种更新方式任选：
+
+### 方式一：GitHub 集成（推荐，push 即自动部署）
+
+1. 在 GitHub 上 **Fork** 本仓库（或直接使用自己的副本仓库）
+2. Cloudflare dashboard → Workers & Pages → 你的 Worker → **Settings → Git integration（Builds from GitHub）** → Connect GitHub，选择你的 fork 仓库，构建命令会自动读取 `wrangler.toml` 的 `[build]` 配置
+3. 之后想更新时：`git pull` 上游 → `git push` 你的 fork → Cloudflare 自动重新构建部署
+
+### 方式二：一键部署重跑
+
+新版本发布后，重新点一次 README 顶部的一键部署按钮（部署到同一 Worker 名称即可覆盖更新）。注意：后台配置的变量与绑定**需要重新确认**（绑定在后台配置，通常不受影响；变量如被清空需重新添加）。
+
+### 方式三：手动 wrangler 部署
+
+```bash
+git pull
+pnpm install && pnpm build && pnpm deploy
+```
+
+### 升级前备份（建议）
+
+| 平台 | 备份命令 |
+| --- | --- |
+| Cloudflare D1 | `wrangler d1 export esay-db --remote --output backup.sql` |
+| PostgreSQL | `pg_dump "你的 DATABASE_URL" > backup.sql` |
+
 ### 可选配置
 
 - `JWT_SECRET`（推荐配置）：JWT 签名密钥。**不配置也能用**——首次请求自动生成并持久化到数据库（跨部署/重启不失效）；但多实例部署（Vercel/Netlify 的函数实例）存在并发生成、登录态偶发失效的窗口，建议显式配置固定值。三种配置方式任选：

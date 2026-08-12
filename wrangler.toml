@@ -1,21 +1,14 @@
-# Moment · Cloudflare Workers 部署配置
-# 零配置部署：D1 数据库与 R2 存储桶由 wrangler 在首次 deploy 时自动创建并绑定，
+# esay · Cloudflare Workers 部署配置
+# 数据库（D1）与存储（R2）绑定由用户在 Cloudflare 后台手动配置，不在此声明：
+#   Workers & Pages → 你的 Worker → Settings → Bindings
+#   - D1 database：moment-db，绑定名称 DB
+#   - R2 bucket：moment-images，绑定名称 R2
 # 表结构在应用首次请求时自动创建，管理员账号通过站点初始化页面设置。
-# 用法：npm run build && npm run deploy
+# 用法：pnpm build && pnpm deploy
 name = "moment"
 main = ".output/server/index.mjs"
 compatibility_date = "2026-08-08"
 compatibility_flags = ["nodejs_compat"]
-
-# 数据库：D1（自动预置。首次部署创建 moment-db，此后按名复用同一数据库）
-d1_databases = [
-  { binding = "DB", database_name = "moment-db" }
-]
-
-# 图片存储：R2（自动预置。首次部署创建 moment-images，此后按名复用同一存储桶）
-r2_buckets = [
-  { binding = "R2", bucket_name = "moment-images" }
-]
 
 observability = { enabled = true, head_sampling_rate = 1 }
 

@@ -32,10 +32,16 @@
 
 ## 快速开始（Cloudflare Workers，推荐）
 
-零配置部署：D1 数据库与 R2 存储桶由 wrangler 首次部署时自动创建并绑定，表结构在首次请求时自动创建，管理员账号通过站点初始化页面设置（无需手动建库、跑迁移或配置密钥）。
+部署后在 Cloudflare 后台手动配置数据库与存储绑定（表结构在首次请求时自动创建，管理员账号通过站点初始化页面设置）：
+
+1. **创建 D1 数据库**：dash.cloudflare.com → Workers & Pages → D1 → Create database，名称 `moment-db`
+2. **创建 R2 存储桶**：Workers & Pages → R2 → Create bucket，名称 `moment-images`
+3. **绑定到 Worker**：Workers & Pages → 你的 Worker → Settings → Bindings → Add binding：
+   - D1 database → 选择 `moment-db`，绑定名称 `DB`
+   - R2 bucket → 选择 `moment-images`，绑定名称 `R2`
 
 ```bash
-# 1. 登录并部署（自动创建 D1 / R2）
+# 1. 登录并部署
 wrangler login
 pnpm build
 pnpm deploy
@@ -54,7 +60,7 @@ pnpm deploy
   - Vercel / Netlify：平台的环境变量设置里添加 `JWT_SECRET`
   - 生成方式见下方「生成 JWT 密钥」
 - `wrangler secret put GITHUB_TOKEN`（可选）：GitHub 项目卡片解析携带该 Token，API 配额从 60 次/小时提升至 5000 次/小时；解析结果缓存 24 小时（D1/PG `extension_cache` 表），同一仓库不重复请求
-- 自动创建并绑定固定名称的资源：`moment-db`（D1）与 `moment-images`（R2）。**按名复用**：重复 `wrangler deploy` 不会重建资源，数据持久保留；可在仪表盘或 `wrangler d1 list` / `wrangler r2 bucket list` 中查看
+- 绑定名称固定为 `DB`（D1）与 `R2`（存储桶），配置错了初始化页会提示；数据持久保留在 `moment-db` / `moment-images` 中，可在仪表盘或 `wrangler d1 list` / `wrangler r2 bucket list` 中查看
 - 若出现"重新部署后站点又回到初始化页"：先运行 `wrangler d1 list` 确认是否存在多个 `moment-db`（多为历史手动创建），并检查根目录 `wrangler.toml` 是否被 wrangler 写入了 `database_id`（有则数据已绑定到该库）
 - 所有 `/api/*` 响应均带 `Cache-Control: no-store`，不会被浏览器或边缘缓存（若站点启用了 Cache Everything 类规则，也请排除 `/api/*`）
 

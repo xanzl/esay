@@ -16,7 +16,7 @@
 
 > 点击下方按钮即可将本仓库一键部署到对应平台（需已推送代码到 GitHub）。
 
-**Cloudflare Workers（主推）** — 自动创建 D1 数据库与 R2 存储桶，首次打开站点按引导初始化管理员：
+**Cloudflare Workers（主推）** — D1 数据库与 R2 存储桶与worker集成度最佳，后台绑定后首次打开站点按引导初始化管理员：
 
 [![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/xanzl/esay)
 
@@ -34,11 +34,11 @@
 
 部署后在 Cloudflare 后台手动配置数据库与存储绑定（表结构在首次请求时自动创建，管理员账号通过站点初始化页面设置）：
 
-1. **创建 D1 数据库**：dash.cloudflare.com → Workers & Pages → D1 → Create database，名称 `moment-db`
-2. **创建 R2 存储桶**：Workers & Pages → R2 → Create bucket，名称 `moment-images`
+1. **创建 D1 数据库**：dash.cloudflare.com → Workers & Pages → D1 → Create database，名称 `esay-db`
+2. **创建 R2 存储桶**：Workers & Pages → R2 → Create bucket，名称 `esay-images`
 3. **绑定到 Worker**：Workers & Pages → 你的 Worker → Settings → Bindings → Add binding：
-   - D1 database → 选择 `moment-db`，绑定名称 `DB`
-   - R2 bucket → 选择 `moment-images`，绑定名称 `R2`
+   - D1 database → 选择 `esay-db`，绑定名称 `DB`
+   - R2 bucket → 选择 `esay-images`，绑定名称 `R2`
 
 ```bash
 # 1. 登录并部署
@@ -102,7 +102,7 @@ python3 -c "import secrets; print(secrets.token_hex(32))"
 
 ## 环境变量
 
-见 `.env.example`（复制为 `.env` 或配置到平台）。
+各平台需要配置的变量见上文「Vercel / Netlify 部署」表格与「可选配置」；本地开发可自行创建 `.env`（变量名同上表）。
 
 ## 公开 API（无需认证，支持 CORS）
 

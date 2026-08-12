@@ -14,19 +14,19 @@
 
 ## 一键部署
 
-> 先把代码推送到 GitHub，再把下面链接中的 `<REPO_URL>` 替换成你的仓库地址（如 `https://github.com/yourname/esay`）即可。
+> 点击下方按钮即可将本仓库一键部署到对应平台（需已推送代码到 GitHub）。
 
 **Cloudflare Workers（主推）** — 自动创建 D1 数据库与 R2 存储桶，首次打开站点按引导初始化管理员：
 
-[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=<REPO_URL>)
+[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/xanzl/esay)
 
 **Vercel** — 需配置 PostgreSQL（`DB_TYPE=postgresql`）+ S3（`STORAGE_TYPE=s3`），见下方环境变量表：
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=<REPO_URL>)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/xanzl/esay)
 
 **Netlify** — 同上，需 PostgreSQL + S3：
 
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=<REPO_URL>)
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/xanzl/esay)
 
 > Cloudflare 一键部署要求仓库根目录保留 `wrangler.toml` 且能正常执行 `pnpm build`（Nitro cloudflare_module preset）；Vercel / Netlify 会读取 `vercel.json` / `netlify.toml` 自动切换对应 preset。
 

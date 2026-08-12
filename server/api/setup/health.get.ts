@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import { getEnv } from '../../utils/env'
+import { getEnv, resolveDbType } from '../../utils/env'
 import { getRepo } from '../../db/client'
 
 export interface DbHealth {
@@ -12,7 +12,7 @@ export interface DbHealth {
 /** 数据库连通性检查：初始化前先确认已连接数据库，失败时返回指导前端引导用户的 reason */
 export default defineEventHandler(async (event: H3Event): Promise<DbHealth> => {
   const env = getEnv(event)
-  const dbType: 'd1' | 'postgresql' = env.DB_TYPE === 'postgresql' ? 'postgresql' : 'd1'
+  const dbType = resolveDbType(env)
 
   if (dbType === 'postgresql' && !env.DATABASE_URL) {
     return { dbConnected: false, dbType, reason: 'missing_database_url' }

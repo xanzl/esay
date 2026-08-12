@@ -20,8 +20,7 @@ const detail = computed<Array<{ step: string; code?: string }>>(() => {
         step: '在 Worker 上绑定该数据库：Workers & Pages → 你的 Worker → Settings → Bindings → Add binding → D1 database，选择刚创建的 esay-db，绑定名称填 DB。',
       },
       {
-        step: '确认后重新部署并生效：',
-        code: 'pnpm build && pnpm deploy',
+        step: '确认后请在后台重试当前部署重新部署并生效：',
       },
       {
         step: '如果部署在 Vercel / Netlify（而非 Cloudflare Workers），请改用 PostgreSQL：设置 DB_TYPE=postgresql 与 DATABASE_URL 后重新部署。',

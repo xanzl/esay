@@ -154,10 +154,19 @@ describe('D1 完整流程（node:sqlite 模拟绑定 + 真实 drizzle/h3 代码�
       return await handler(event)
     })
 
+  const withVercel = (handler: (event: any) => unknown) =>
+    eventHandler(async (event) => {
+      ;(event.context as any)._platform = {
+        cloudflare: { env: { VERCEL: '1', STORAGE_TYPE: 's3', PUBLIC_API_ENABLED: 'true' } },
+      }
+      return await handler(event)
+    })
+
   const router = createRouter()
   router.get('/api/setup/status', withCf(statusHandler))
   router.get('/api/setup/health', withCf(healthHandler))
   router.get('/api/setup/health/nodb', withNoDb(healthHandler))
+  router.get('/api/setup/health/vercel', withVercel(healthHandler))
   router.post('/api/setup/init', withCf(initHandler))
   router.get('/api/public/site', withCf(publicSiteHandler))
   router.get('/api/public/config', withCf(publicConfigHandler))
@@ -237,6 +246,14 @@ describe('D1 完整流程（node:sqlite 模拟绑定 + 真实 drizzle/h3 代码�
     const body = (await res.json()) as { dbConnected: boolean; reason: string }
     expect(body.dbConnected).toBe(false)
     expect(body.reason).toBe('missing_d1_binding')
+  })
+
+  it('数据库健康：Vercel/Netlify 平台未配 DB_TYPE 时自动识别为 PostgreSQL', async () => {
+    const vercelRes = await fetch(`${base}/api/setup/health/vercel`)
+    expect(vercelRes.status).toBe(200)
+    const vercelBody = (await vercelRes.json()) as { dbConnected: boolean; dbType: string; reason?: string }
+    expect(vercelBody.dbType).toBe('postgresql')
+    expect(vercelBody.reason).toBe('missing_database_url')
   })
 
   it('初始化：创建管理员并返回 token', async () => {

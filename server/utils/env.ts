@@ -8,6 +8,8 @@ export type Env = Record<string, unknown> & {
   JWT_SECRET?: string
   PUBLIC_API_ENABLED?: string
   APP_URL?: string
+  VERCEL?: string
+  NETLIFY?: string
   S3_ENDPOINT?: string
   S3_REGION?: string
   S3_BUCKET?: string
@@ -30,4 +32,16 @@ export type Env = Record<string, unknown> & {
 export function getEnv(event: H3Event): Env {
   const cloudflare = (event.context as { _platform?: { cloudflare?: { env?: Env } } })._platform?.cloudflare
   return (cloudflare?.env ?? process.env) as Env
+}
+
+/**
+ * 解析数据库类型：显式配置优先；未配置时按部署平台自动识别——
+ * Vercel / Netlify 运行时注入 VERCEL=1 / NETLIFY=true，自动默认 PostgreSQL（它们没有 D1 绑定）；
+ * 其余（Cloudflare Workers / 本地）默认 D1。
+ */
+export function resolveDbType(env: Env): 'd1' | 'postgresql' {
+  const explicit = String(env.DB_TYPE ?? '').trim().toLowerCase()
+  if (explicit === 'postgresql' || explicit === 'd1') return explicit
+  if (env.VERCEL === '1' || env.NETLIFY === 'true') return 'postgresql'
+  return 'd1'
 }

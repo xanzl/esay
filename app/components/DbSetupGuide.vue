@@ -19,15 +19,30 @@ const detail = computed<Array<{ step: string; code?: string }>>(() => {
       },
       { step: '确认已执行 wrangler login 登录 Cloudflare 账号。' },
       { step: '重新构建并部署：' },
-      { step: '', code: 'npm run build && npm run deploy' },
+      { step: '', code: 'pnpm build && pnpm deploy' },
+      {
+        step: '如果部署在 Vercel / Netlify（而非 Cloudflare Workers），请改用 PostgreSQL：设置 DB_TYPE=postgresql 与 DATABASE_URL 后重新部署。',
+      },
     ]
   }
   if (reason === 'missing_database_url') {
     return [
-      { step: '当前使用 PostgreSQL 模式但未配置 DATABASE_URL，请在部署平台（Vercel / Netlify 等）设置环境变量：' },
-      { step: '', code: 'DB_TYPE=postgresql\nDATABASE_URL=postgres://…' },
-      { step: '也可以改用 Cloudflare D1（默认），无需配置数据库连接串。' },
-      { step: '配置后重新部署，再点下方"重新检查"。' },
+      {
+        step: '当前使用 PostgreSQL 模式但未配置 DATABASE_URL。Vercel / Netlify 部署需要在平台侧配置以下环境变量（值按实际替换）：',
+        code: 'DB_TYPE=postgresql\nDATABASE_URL=postgres://用户:密码@主机:5432/数据库\nSTORAGE_TYPE=s3\nS3_ENDPOINT=https://s3.amazonaws.com\nS3_REGION=us-east-1\nS3_BUCKET=你的存储桶\nS3_ACCESS_KEY_ID=你的密钥ID\nS3_SECRET_ACCESS_KEY=你的密钥\nPUBLIC_API_ENABLED=true\nAPP_URL=https://你的域名',
+      },
+      {
+        step: 'Vercel：项目 → Settings → Environment Variables 逐项添加，保存后 Deployments → Redeploy 重新部署。',
+      },
+      {
+        step: 'Netlify：Site configuration → Environment variables 逐项添加，保存后会自动触发重新构建。',
+      },
+      {
+        step: 'JWT_SECRET（可选）可用下方命令生成并同样配置：',
+        code: 'openssl rand -hex 32',
+      },
+      { step: '也可以改用 Cloudflare D1（默认模式），无需配置数据库连接串。' },
+      { step: '配置并重新部署后，再点下方"重新检查"。' },
     ]
   }
   if (reason === 'connect_error') {

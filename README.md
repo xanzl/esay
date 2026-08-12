@@ -14,9 +14,9 @@
 
 ## 一键部署
 
-> 点击下方按钮即可将本仓库一键部署到对应平台（需已推送代码到 GitHub）。
+> 推荐流程：先 **Fork** 本仓库 → 用 Fork 后的仓库部署（部署入口详见下方各平台）→ 以后更新只需在 GitHub 上点 **Sync fork** 同步上游，平台自动重新部署。
 
-**Cloudflare Workers（主推）** — D1 数据库与 R2 存储桶与worker集成度最佳，后台绑定后首次打开站点按引导初始化管理员：
+**Cloudflare Workers（主推）** — D1 数据库与 R2 存储桶与 worker 集成度最佳，后台绑定后首次打开站点按引导初始化管理员：
 
 [![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/xanzl/esay)
 
@@ -28,11 +28,26 @@
 
 [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/xanzl/esay)
 
-> Cloudflare 一键部署要求仓库根目录保留 `wrangler.toml` 且能正常执行 `pnpm build`（Nitro cloudflare_module preset）；Vercel / Netlify 会读取 `vercel.json` / `netlify.toml` 自动切换对应 preset。
+> 一键部署按钮指向本仓库；若要长期自动更新，建议 **Fork 后把按钮链接中的 `xanzl/esay` 换成你自己的 fork 地址**（如 `https://github.com/你的用户名/esay`）再部署，或使用下方「Git 集成」方式关联 fork。
 
 ## 快速开始（Cloudflare Workers，推荐）
 
-部署后在 Cloudflare 后台手动配置数据库与存储绑定（表结构在首次请求时自动创建，管理员账号通过站点初始化页面设置）：
+### 第一步：Fork 仓库
+
+1. 打开 [github.com/xanzl/esay](https://github.com/xanzl/esay)，点击右上角 **Fork**（保留默认设置即可）
+2. 后续用你的 fork 部署；更新时在 fork 页面点 **Sync fork → Update branch** 即可同步上游最新代码
+
+### 第二步：创建 Worker 并关联仓库（Git 集成，推荐）
+
+1. Cloudflare dashboard → Workers & Pages → **Create** → 选择 **Git integration（Builds from GitHub）** → Connect GitHub，选择你刚 fork 的仓库
+2. 构建命令与输出目录会自动读取 `wrangler.toml` 的 `[build]` 配置，无需手动填写
+3. 创建完成后，push 到 fork 的任何改动都会自动重新构建部署
+
+> 也可以直接用右上角一键部署按钮（一次性部署，无自动更新）。
+
+### 第三步：后台配置数据库与存储绑定
+
+（表结构在首次请求时自动创建，管理员账号通过站点初始化页面设置）
 
 1. **创建 D1 数据库**：dash.cloudflare.com → Workers & Pages → D1 → Create database，名称 `esay-db`
 2. **创建 R2 存储桶**：Workers & Pages → R2 → Create bucket，名称 `esay-images`
@@ -40,17 +55,9 @@
    - D1 database → 选择 `esay-db`，绑定名称 `DB`
    - R2 bucket → 选择 `esay-images`，绑定名称 `R2`
 
-```bash
-# 1. 登录并部署
-wrangler login
-pnpm build
-pnpm deploy
+4. 打开站点，在「初始化 esay」页面设置管理员用户名与密码即可使用。
 
-# 2. 打开站点，在"初始化 esay"页面设置管理员用户名与密码，
-#    随后自动登录即可开始使用
-```
-
-> 按项目验收要求，不使用 `wrangler dev` 本地调试，所有验证均在真实 Workers 环境（`wrangler deploy`）中进行。
+> 不使用 Git 集成时，也可本地部署：`wrangler login && pnpm build && pnpm deploy`。
 
 ## 如何更新
 
@@ -60,11 +67,13 @@ pnpm deploy
 
 三种更新方式任选：
 
-### 方式一：GitHub 集成（推荐，push 即自动部署）
+### 方式一：同步 fork（推荐，网页操作即可）
 
-1. 在 GitHub 上 **Fork** 本仓库（或直接使用自己的副本仓库）
-2. Cloudflare dashboard → Workers & Pages → 你的 Worker → **Settings → Git integration（Builds from GitHub）** → Connect GitHub，选择你的 fork 仓库，构建命令会自动读取 `wrangler.toml` 的 `[build]` 配置
-3. 之后想更新时：`git pull` 上游 → `git push` 你的 fork → Cloudflare 自动重新构建部署
+1. 打开你在 GitHub 上的 **fork 仓库**页面
+2. 点击 **Sync fork → Update branch**（把上游最新代码合并到你的 fork）
+3. Git 集成检测到更新后**自动重新构建部署**，无需任何其他操作
+
+> 如果你部署的不是 fork（比如一键部署的原仓库），则用方式二或方式三。
 
 ### 方式二：一键部署重跑
 
